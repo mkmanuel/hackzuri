@@ -3,14 +3,49 @@ import io from "socket.io-client";
 import Peer from "simple-peer";
 import styled from "styled-components";
 import { StyledVideo, Video } from "../components";
+import coffeeTable from "../images/coffee-table.png";
 
-const Container = styled.div`
-  padding: 20px;
-  display: flex;
-  height: 100vh;
-  width: 90%;
-  margin: auto;
-  flex-wrap: wrap;
+const PageContainer = styled.div`
+  margin: 0.5rem 1rem;
+
+  @media only screen and (min-width: 768px) {
+    margin-left: 4rem;
+    margin-right: 4rem;
+  }
+`;
+
+const RoomContainer = styled.div`
+  border: 1px solid black;
+  min-height: 20rem;
+
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-gap: 10px;
+  grid-auto-rows: minmax(200px, auto);
+
+  .table {
+    align-self: center;
+    justify-self: center;
+
+    img {
+      width: 10rem;
+    }
+  }
+
+  .table-1 {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .table-2 {
+    grid-column: 3;
+    grid-row: 2;
+  }
+
+  .table-3 {
+    grid-column: 1;
+    grid-row: 3;
+  }
 `;
 
 const videoConstraints = {
@@ -97,11 +132,24 @@ export const Room = (props) => {
   }
 
   return (
-    <Container>
+    <PageContainer>
+      <h1>Your room</h1>
+      <RoomContainer>
+        <div className="table table-1">
+          <img src={coffeeTable} />
+        </div>
+        <div className="table table-2">
+          <img src={coffeeTable} />
+        </div>
+        <div className="table table-3">
+          <img src={coffeeTable} />
+        </div>
+      </RoomContainer>
+
       <StyledVideo muted ref={userVideo} autoPlay playsInline />
       {peers.map((peer, index) => {
         return <Video key={index} peer={peer} />;
       })}
-    </Container>
+    </PageContainer>
   );
 };
