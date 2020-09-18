@@ -2,8 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import io from "socket.io-client";
 import Peer from "simple-peer";
 import styled from "styled-components";
-import { StyledVideo, Video } from "../components";
-import coffeeTable from "../images/coffee-table.png";
+import { StyledVideo, Table, Video } from "../components";
 
 const PageContainer = styled.div`
   margin: 0.5rem 1rem;
@@ -19,13 +18,18 @@ const RoomContainer = styled.div`
   min-height: 20rem;
 
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: 3fr 1fr 3fr;
   grid-gap: 10px;
   grid-auto-rows: minmax(200px, auto);
 
   .table {
     align-self: center;
     justify-self: center;
+    width: 100%;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 
     img {
       width: 10rem;
@@ -135,18 +139,14 @@ export const Room = (props) => {
     <PageContainer>
       <h1>Your room</h1>
       <RoomContainer>
-        <div className="table table-1">
-          <img src={coffeeTable} />
-        </div>
-        <div className="table table-2">
-          <img src={coffeeTable} />
-        </div>
-        <div className="table table-3">
-          <img src={coffeeTable} />
-        </div>
+        {[...Array(3)].map((item, index) => (
+          <Table index={index + 1} />
+        ))}
       </RoomContainer>
 
+      {/* This is yourself */}
       <StyledVideo muted ref={userVideo} autoPlay playsInline />
+
       {peers.map((peer, index) => {
         return <Video key={index} peer={peer} />;
       })}
