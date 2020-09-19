@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { PlusCircle } from "@styled-icons/boxicons-regular";
 
 import coffeeTable from "../images/coffee-table.png";
-import { StyledVideo } from "./video";
+import {StyledVideo, Video} from "./video";
 
 const StyledBubbles = styled.div`
   display: flex;
@@ -17,11 +17,12 @@ const StyledBubbles = styled.div`
 `;
 
 export const Table = ({
-  tableIndex,
-  onBubbleClick,
-  yourPosition,
-  userVideoRef,
-}) => {
+                          tableIndex,
+                          onBubbleClick,
+                          yourPosition,
+                          userVideoRef,
+                          peers,
+                      }) => {
   return (
     <div className={`table table-${tableIndex + 1}`}>
       <img src={coffeeTable} />
@@ -35,14 +36,18 @@ export const Table = ({
             {yourPosition &&
             yourPosition.tableIndex === tableIndex &&
             yourPosition.bubbleIndex === bubbleIndex ? (
-              <StyledVideo muted ref={userVideoRef} autoPlay playsInline>
-                Yourself
-              </StyledVideo>
+                <StyledVideo muted ref={userVideoRef} autoPlay playsInline>
+                    Yourself
+                </StyledVideo>
             ) : (
-              <PlusCircle size={24} />
+                <PlusCircle size={24}/>
             )}
           </div>
         ))}
+          {peers.map((peer, index) => {
+              console.log(index)
+              return <Video key={index} peer={peer}/>;
+          })}
       </StyledBubbles>
     </div>
   );

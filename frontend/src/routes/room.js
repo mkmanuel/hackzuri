@@ -68,9 +68,8 @@ const videoConstraints = {
 };
 
 export const Room = (props) => {
-  const [peers, setPeers] = useState([]);
+  const [peers, setPeers] = useState({});
   const [tables, setTables] = useState([]);
-  const [tablePeers, setTablePeers] = useState([]); // these need to be louder than all the others
 
   // undefined means the user is currently in waiting lobby.
   // When a table is selected it should contain an object of table and bubble indexes.
@@ -79,7 +78,6 @@ export const Room = (props) => {
   const socketRef = useRef();
   const userVideoRef = useRef();
   const peersRef = useRef([]);
-  const tablePeersRef = useRef([]);
   const roomID = props.match.params.roomID;
 
   useEffect(() => {
@@ -90,35 +88,24 @@ export const Room = (props) => {
         userVideoRef.current.srcObject = stream;
         socketRef.current.emit("join room", roomID);
 
-        socketRef.current.on("all users", (users) => {
-          const peers = [];
-          users.forEach((userID) => {
-            const peer = createPeer(userID, socketRef.current.id, stream);
-            peersRef.current.push({
-              peerID: userID,
-              peer,
-            });
-            peers.push(peer);
-          });
-          setPeers(peers);
-        });
-
-        socketRef.current.on("table users", (users) => {
-          console.log(users);
-          const peers = [];
-          users.forEach((userID) => {
-            const peer = createPeer(userID, socketRef.current.id, stream);
-            tablePeersRef.current.push({
-              peerID: userID,
-              peer,
-            });
-            peers.push(peer);
-          });
-          setTablePeers(peers);
-        });
-
         socketRef.current.on("all tables", (tables) => {
-          setTables(tables);
+          console.log(tables)
+          let peerTables = [];
+          tables.forEach(table => {
+            let peers = table.users.map((userID) => {
+              const peer = createPeer(userID, socketRef.current.id, stream);
+              peersRef.current.push({
+                peerID: userID,
+                peer,
+              });
+              return (peer);
+            });
+            peerTables.push({
+              tableID: table.tableID,
+              peers: peers,
+            });
+          });
+          setTables(peerTables)
         });
 
         socketRef.current.on("user joined", (payload) => {
@@ -190,14 +177,15 @@ export const Room = (props) => {
       </Button>
       <h1>Your room</h1>
       <RoomContainer>
-        {tables.map((tableUUID, index) => (
-          <Table
-            key={index}
-            yourPosition={yourPosition}
-            tableIndex={index}
-            onBubbleClick={onBubbleClick}
-            userVideoRef={userVideoRef}
-          />
+        {tables.map((table, index) => (
+            <Table
+                key={index}
+                yourPosition={yourPosition}
+                tableIndex={index}
+                onBubbleClick={onBubbleClick}
+                userVideoRef={userVideoRef}
+                peers={table.peers}
+            />
         ))}
         <WaitingLobby
           userInWaitingLobby={!yourPosition}
@@ -205,10 +193,6 @@ export const Room = (props) => {
           backToLobby={goBackToLobby}
         />
       </RoomContainer>
-
-      {peers.map((peer, index) => {
-        return <Video key={index} peer={peer} />;
-      })}
     </PageContainer>
   );
 };

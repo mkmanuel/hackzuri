@@ -13,8 +13,6 @@ const socketToRoom = {};
 
 const tablesInRoom = {};
 
-const usersAtTable = {};
-
 
 // Rooms contain tables which themselves contain users. These get sent to frontend
 const TableWithUsers = () => (
@@ -38,9 +36,7 @@ io.on("connection", (socket) => {
       tablesInRoom[roomID] = [TableWithUsers(), TableWithUsers(), TableWithUsers()]; // tables are fixed at 3
     }
     socketToRoom[socket.id] = roomID;
-    const usersInThisRoom = users[roomID].filter((id) => id !== socket.id);
 
-    socket.emit("all users", usersInThisRoom);
     socket.emit("all tables", tablesInRoom[roomID]);
   });
 
@@ -77,7 +73,7 @@ io.on("connection", (socket) => {
             return;
         }
       console.log("tables in new config: " + tablesInRoom[roomID])
-      socket.emit("table users", tablesInRoom[roomID]);
+      socket.emit("all tables", tablesInRoom[roomID]);
     }
   });
 

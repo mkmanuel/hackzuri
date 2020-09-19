@@ -29,15 +29,15 @@ export const WaitingLobby = ({
     <StyledWaitingLobby>
       <h2 className="title">Waiting lobby</h2>
       {!userInWaitingLobby && (
-        <div className="back-to-lobby-section">
-          <Button onClick={backToLobby}>Back to Lobby</Button>
-        </div>
+          <div className="back-to-lobby-section">
+            <Button onClick={backToLobby}>Back to Lobby</Button>
+          </div>
       )}
-      {userInWaitingLobby && (
-        <StyledVideo muted ref={userVideoRef} autoPlay playsInline>
-          Yourself
-        </StyledVideo>
-      )}
+      {userInWaitingLobby ? (
+          <StyledVideo muted ref={userVideoRef} autoPlay playsInline>
+            Yourself
+          </StyledVideo>
+      ) : null}
     </StyledWaitingLobby>
   );
 };
