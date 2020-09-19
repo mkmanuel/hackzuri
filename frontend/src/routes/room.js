@@ -15,7 +15,8 @@ const PageContainer = styled.div`
 `;
 
 const RoomContainer = styled.div`
-  border: 1px solid black;
+  box-shadow: 0 1px 2px #ccc;
+
   min-height: 20rem;
 
   display: grid;
