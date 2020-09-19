@@ -10,6 +10,12 @@ const OverviewContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-direction: column;
+
+  h1 {
+    margin-bottom: 5rem;
+    font-size: 4rem;
+  }
 `;
 
 export const CreateRoom = (props) => {
@@ -20,6 +26,7 @@ export const CreateRoom = (props) => {
 
   return (
     <OverviewContainer>
+      <h1>BubbleCoffee</h1>
       <Button onClick={create}>Create room</Button>
     </OverviewContainer>
   );
