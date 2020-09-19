@@ -6,8 +6,8 @@ import { Button } from "./button";
 const StyledWaitingLobby = styled.div`
   background-color: #f2c9b7;
 
-  grid-column: 3;
-  grid-row: 3;
+  grid-column: 2;
+  grid-row: 2;
 
   .title {
     display: flex;

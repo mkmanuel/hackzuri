@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import io from "socket.io-client";
 import Peer from "simple-peer";
 import styled from "styled-components";
-import { Button, StyledVideo, Table, Video } from "../components";
+import { Button, Table, Video } from "../components";
 import { WaitingLobby } from "../components/waiting-lobby";
 
 const PageContainer = styled.div`
@@ -19,9 +19,9 @@ const RoomContainer = styled.div`
   min-height: 20rem;
 
   display: grid;
-  grid-template-columns: 3fr 1fr 3fr;
-  grid-gap: 10px;
-  grid-auto-rows: 3fr 1fr 3fr;
+  grid-template-columns: 3fr 3fr;
+  grid-gap: 1rem;
+  grid-auto-rows: 3fr 3fr;
 
   > div {
     height: 100%;
@@ -51,13 +51,13 @@ const RoomContainer = styled.div`
   }
 
   .table-2 {
-    grid-column: 3;
+    grid-column: 2;
     grid-row: 1;
   }
 
   .table-3 {
     grid-column: 1;
-    grid-row: 3;
+    grid-row: 2;
   }
 `;
 
@@ -86,7 +86,7 @@ export const Room = (props) => {
       .then((stream) => {
         userVideoRef.current.srcObject = stream;
         socketRef.current.emit("join room", roomID);
-        socketRef.current.emit("join table", (roomID, tableID))
+        socketRef.current.emit("join table", (roomID, tableID));
         socketRef.current.on("all users", (users) => {
           const peers = [];
           users.forEach((userID) => {
