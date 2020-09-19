@@ -37,8 +37,8 @@ io.on('connection', socket => {
 
     socket.on("join table", (roomID, tableID) => {
         // remove user from old table => find all tables in room and see if they are sat anywhere.
-        let oldTable = tablesInRoom[roomID].filter(table => !tableToUser[table].contains(socket.id));
-        let oldUsers = tableToUser[oldTable].filter(id => id !== socket.id);
+        let oldTable = tablesInRoom[roomID] ? tablesInRoom[roomID].filter(table => !tableToUser[table].contains(socket.id)) : 0;
+        let oldUsers = tableToUser[oldTable] ? tableToUser[oldTable].filter(id => id !== socket.id) : [];
         tableToUser[oldTable] = oldUsers;
 
         if (tableToUser[tableID]) {
