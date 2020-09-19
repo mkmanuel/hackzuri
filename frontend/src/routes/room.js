@@ -103,7 +103,7 @@ export const Room = (props) => {
         });
 
         socketRef.current.on("table users", (users) => {
-          console.log(users)
+          console.log(users);
           const peers = [];
           users.forEach((userID) => {
             const peer = createPeer(userID, socketRef.current.id, stream);
@@ -117,7 +117,7 @@ export const Room = (props) => {
         });
 
         socketRef.current.on("all tables", (tables) => {
-          setTables(tables)
+          setTables(tables);
         });
 
         socketRef.current.on("user joined", (payload) => {
@@ -174,7 +174,7 @@ export const Room = (props) => {
   const onBubbleClick = (tableIndex, bubbleIndex) => {
     let uuid = tables[tableIndex];
     socketRef.current.emit("join table", roomID, uuid);
-    setYourPosition({tableIndex, bubbleIndex});
+    setYourPosition({ tableIndex, bubbleIndex });
   };
 
   const goBackToLobby = () => {
@@ -190,12 +190,12 @@ export const Room = (props) => {
       <h1>Your room</h1>
       <RoomContainer>
         {tables.map((tableUUID, index) => (
-            <Table
-                yourPosition={yourPosition}
-                tableIndex={index}
-                onBubbleClick={onBubbleClick}
-                userVideoRef={userVideoRef}
-            />
+          <Table
+            yourPosition={yourPosition}
+            tableIndex={index}
+            onBubbleClick={onBubbleClick}
+            userVideoRef={userVideoRef}
+          />
         ))}
         <WaitingLobby
           userInWaitingLobby={!yourPosition}
