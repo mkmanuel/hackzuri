@@ -72,6 +72,7 @@ export const Room = (props) => {
   // undefined means the user is currently in waiting lobby.
   // When a table is selected it should contain an object of table and bubble indexes.
   const [yourPosition, setYourPosition] = useState(undefined);
+  const [tableID, setTableID] = useState(0);
 
   const socketRef = useRef();
   const userVideoRef = useRef();
@@ -85,6 +86,7 @@ export const Room = (props) => {
       .then((stream) => {
         userVideoRef.current.srcObject = stream;
         socketRef.current.emit("join room", roomID);
+        socketRef.current.emit("join table", (roomID, tableID))
         socketRef.current.on("all users", (users) => {
           const peers = [];
           users.forEach((userID) => {
