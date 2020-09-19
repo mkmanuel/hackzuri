@@ -68,15 +68,17 @@ const videoConstraints = {
 
 export const Room = (props) => {
   const [peers, setPeers] = useState([]);
+  const [tables, setTables] = useState([]);
+  const [tablePeers, setTablePeers] = useState([]); // these need to be louder than all the others
 
   // undefined means the user is currently in waiting lobby.
   // When a table is selected it should contain an object of table and bubble indexes.
   const [yourPosition, setYourPosition] = useState(undefined);
-  const [tableID, setTableID] = useState(0);
 
   const socketRef = useRef();
   const userVideoRef = useRef();
   const peersRef = useRef([]);
+  const tablePeersRef = useRef([]);
   const roomID = props.match.params.roomID;
 
   useEffect(() => {
@@ -86,7 +88,7 @@ export const Room = (props) => {
       .then((stream) => {
         userVideoRef.current.srcObject = stream;
         socketRef.current.emit("join room", roomID);
-        socketRef.current.emit("join table", (roomID, tableID));
+
         socketRef.current.on("all users", (users) => {
           const peers = [];
           users.forEach((userID) => {
@@ -98,6 +100,24 @@ export const Room = (props) => {
             peers.push(peer);
           });
           setPeers(peers);
+        });
+
+        socketRef.current.on("table users", (users) => {
+          console.log(users)
+          const peers = [];
+          users.forEach((userID) => {
+            const peer = createPeer(userID, socketRef.current.id, stream);
+            tablePeersRef.current.push({
+              peerID: userID,
+              peer,
+            });
+            peers.push(peer);
+          });
+          setTablePeers(peers);
+        });
+
+        socketRef.current.on("all tables", (tables) => {
+          setTables(tables)
         });
 
         socketRef.current.on("user joined", (payload) => {
@@ -152,10 +172,13 @@ export const Room = (props) => {
   }
 
   const onBubbleClick = (tableIndex, bubbleIndex) => {
-    setYourPosition({ tableIndex, bubbleIndex });
+    let uuid = tables[tableIndex];
+    socketRef.current.emit("join table", roomID, uuid);
+    setYourPosition({tableIndex, bubbleIndex});
   };
 
   const goBackToLobby = () => {
+    socketRef.current.emit("join table", roomID, 0);
     setYourPosition(undefined);
   };
 
@@ -166,13 +189,13 @@ export const Room = (props) => {
       </Button>
       <h1>Your room</h1>
       <RoomContainer>
-        {[...Array(3)].map((item, index) => (
-          <Table
-            yourPosition={yourPosition}
-            tableIndex={index}
-            onBubbleClick={onBubbleClick}
-            userVideoRef={userVideoRef}
-          />
+        {tables.map((tableUUID, index) => (
+            <Table
+                yourPosition={yourPosition}
+                tableIndex={index}
+                onBubbleClick={onBubbleClick}
+                userVideoRef={userVideoRef}
+            />
         ))}
         <WaitingLobby
           userInWaitingLobby={!yourPosition}

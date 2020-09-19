@@ -13,7 +13,7 @@ const socketToRoom = {};
 
 const tablesInRoom = {};
 
-const tableToUser = {};
+const usersAtTable = {};
 
 io.on('connection', socket => {
     socket.on("join room", roomID => {
@@ -37,23 +37,28 @@ io.on('connection', socket => {
 
     socket.on("join table", (roomID, tableID) => {
         // remove user from old table => find all tables in room and see if they are sat anywhere.
-        let oldTable = tablesInRoom[roomID] ? tablesInRoom[roomID].filter(table => !tableToUser[table].contains(socket.id)) : 0;
-        let oldUsers = tableToUser[oldTable] ? tableToUser[oldTable].filter(id => id !== socket.id) : [];
-        tableToUser[oldTable] = oldUsers;
+        let oldTable = tablesInRoom[roomID] ? tablesInRoom[roomID].filter(table => usersAtTable[table] ? usersAtTable[table].includes(socket.id) : false) : [];
+        console.log(oldTable);
+        if (oldTable.length > 0) { // can only be 1
+            let oldUsers = usersAtTable[oldTable[0]] ? usersAtTable[oldTable[0]].filter(id => id !== socket.id) : [];
 
-        if (tableToUser[tableID]) {
-            const length = tableToUser[tableID].length;
-            if (length === 3) {
-                socket.emit("table full");
-                return;
-            }
-            tableToUser[tableID].push(socket.id);
-        } else {
-            tableToUser[tableID] = [socket.id];
+            usersAtTable[oldTable[0]] = oldUsers;
         }
-        const usersOnThisTable = tableToUser[tableID].filter(id => id !== socket.id);
 
-        socket.emit("table users", usersOnThisTable);
+        if (tableID !== 0) {
+            if (usersAtTable[tableID]) {
+                const length = usersAtTable[tableID].length;
+                if (length === 3) {
+                    socket.emit("table full");
+                    return;
+                }
+                usersAtTable[tableID].push(socket.id);
+            } else {
+                usersAtTable[tableID] = [socket.id];
+            }
+            const usersOnThisTable = usersAtTable[tableID].filter(id => id !== socket.id);
+            socket.emit("table users", usersOnThisTable);
+        }
     });
 
     socket.on("sending signal", payload => {
