@@ -13,6 +13,11 @@ const StyledWaitingLobby = styled.div`
     display: flex;
     justify-content: center;
   }
+
+  .back-to-lobby-section {
+    display: flex;
+    justify-content: center;
+  }
 `;
 
 export const WaitingLobby = ({
@@ -24,7 +29,9 @@ export const WaitingLobby = ({
     <StyledWaitingLobby>
       <h2 className="title">Waiting lobby</h2>
       {!userInWaitingLobby && (
-        <Button onClick={backToLobby}>Back to Lobby</Button>
+        <div className="back-to-lobby-section">
+          <Button onClick={backToLobby}>Back to Lobby</Button>
+        </div>
       )}
       {userInWaitingLobby && (
         <StyledVideo muted ref={userVideoRef} autoPlay playsInline>
