@@ -98,12 +98,19 @@ export const Room = (props) => {
             tables.forEach(table => {
               let peers = table.users.map((userID) => {
                 if (userID !== ownID) {
-                  const peer = createPeer(userID, socketRef.current.id, stream);
-                  peersRef.current.push({
-                    peerID: userID,
-                    peer,
-                  });
-                  return (peer);
+
+                  let index = peersRef.current.findIndex((peer) => (peer.peerID === userID));
+                  console.log(index);
+                  if (index === -1) {
+                    const peer = createPeer(userID, socketRef.current.id, stream);
+                    peersRef.current.push({
+                      peerID: userID,
+                      peer,
+                    });
+                    return (peer);
+                  } else {
+                    return (peersRef[index]);
+                  }
                 } else {
                   return null;
                 }
@@ -126,7 +133,7 @@ export const Room = (props) => {
             peer,
           });
 
-          setPeers((users) => [...users, peer]);
+
         });
 
         socketRef.current.on("receiving returned signal", (payload) => {
