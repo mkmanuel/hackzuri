@@ -23,6 +23,11 @@ const StyledButton = styled.button`
     background-color: #de7447;
     border: 2px solid #de7447;
     border-radius: 4px;
+
+    &:hover {
+      background-color: white;
+      color: #de7447;
+    }
   }
 
   &.quiet-variant {
