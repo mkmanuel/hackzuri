@@ -159,8 +159,6 @@ export const Room = (props) => {
     setYourPosition(undefined);
   };
 
-  console.log(yourPosition);
-
   return (
     <PageContainer>
       <Button onClick={() => props.history.push(`/`)} variant="quiet">
