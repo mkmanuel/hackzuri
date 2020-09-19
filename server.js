@@ -26,32 +26,32 @@ io.on('connection', socket => {
             users[roomID].push(socket.id);
         } else {
             users[roomID] = [socket.id];
-            tablesInRoom[roomID] = [uuid(), uuid(), uuid()] // tables are fixed at 3 and with a fixed id (1, 2, 3)
+            tablesInRoom[roomID] = [uuid(), uuid(), uuid()] // tables are fixed at 3
         }
         socketToRoom[socket.id] = roomID;
         const usersInThisRoom = users[roomID].filter(id => id !== socket.id);
 
         socket.emit("all users", usersInThisRoom);
-        socket.emit("all tables", usersInThisRoom);
+        socket.emit("all tables", tablesInRoom[roomID]);
     });
 
     socket.on("join table", (roomID, tableID) => {
         // remove user from old table => find all tables in room and see if they are sat anywhere.
-        let oldTable = tablesInRoom[roomID].filter(table => !tableToUser[{roomID, table}].contains(socket.id));
-        let oldUsers = tableToUser[{roomID, oldTable}].filter(id => id !== socket.id);
-        tableToUser[{roomID, oldTable}] = oldUsers;
+        let oldTable = tablesInRoom[roomID].filter(table => !tableToUser[table].contains(socket.id));
+        let oldUsers = tableToUser[oldTable].filter(id => id !== socket.id);
+        tableToUser[oldTable] = oldUsers;
 
-        if (tableToUser[{roomID, tableID}]) {
-            const length = tableToUser[{roomID, tableID}].length;
+        if (tableToUser[tableID]) {
+            const length = tableToUser[tableID].length;
             if (length === 3) {
                 socket.emit("table full");
                 return;
             }
-            tableToUser[{roomID, tableID}].push(socket.id);
+            tableToUser[tableID].push(socket.id);
         } else {
-            tableToUser[{roomID, tableID}] = [socket.id];
+            tableToUser[tableID] = [socket.id];
         }
-        const usersOnThisTable = tableToUser[{roomID, tableID}].filter(id => id !== socket.id);
+        const usersOnThisTable = tableToUser[tableID].filter(id => id !== socket.id);
 
         socket.emit("table users", usersOnThisTable);
     });
