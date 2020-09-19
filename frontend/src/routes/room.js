@@ -88,27 +88,38 @@ export const Room = (props) => {
         userVideoRef.current.srcObject = stream;
         socketRef.current.emit("join room", roomID);
 
-        socketRef.current.on("all tables", (tables) => {
+        socketRef.current.on("all tables", (object) => {
+          console.log(object);
+          let tables = object.tables;
+          let ownID = object.ownID;
           console.log(tables)
           let peerTables = [];
-          tables.forEach(table => {
-            let peers = table.users.map((userID) => {
-              const peer = createPeer(userID, socketRef.current.id, stream);
-              peersRef.current.push({
-                peerID: userID,
-                peer,
+          if (tables) {
+            tables.forEach(table => {
+              let peers = table.users.map((userID) => {
+                if (userID !== ownID) {
+                  const peer = createPeer(userID, socketRef.current.id, stream);
+                  peersRef.current.push({
+                    peerID: userID,
+                    peer,
+                  });
+                  return (peer);
+                } else {
+                  return null;
+                }
+              }).filter((el) => el !== null);
+              peerTables.push({
+                tableID: table.tableID,
+                peers: peers,
               });
-              return (peer);
             });
-            peerTables.push({
-              tableID: table.tableID,
-              peers: peers,
-            });
-          });
-          setTables(peerTables)
+            console.log(peerTables);
+            setTables(peerTables)
+          }
         });
 
         socketRef.current.on("user joined", (payload) => {
+
           const peer = addPeer(payload.signal, payload.callerID, stream);
           peersRef.current.push({
             peerID: payload.callerID,

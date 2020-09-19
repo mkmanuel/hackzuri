@@ -37,7 +37,12 @@ io.on("connection", (socket) => {
     }
     socketToRoom[socket.id] = roomID;
 
-    socket.emit("all tables", tablesInRoom[roomID]);
+
+    socket.emit("all tables",
+      {
+        tables: tablesInRoom[roomID],
+        ownID: socket.id
+      });
   });
 
   socket.on("join table", (roomID, newTable) => {
@@ -70,10 +75,16 @@ io.on("connection", (socket) => {
             return;
         } else {
             tablesInRoom[roomID][newTableIndex].users.push(socket.id);
-            return;
+          console.log("tables in new config: " + tablesInRoom[roomID])
+          socket.emit("all tables",
+            {
+              tables: tablesInRoom[roomID],
+              ownID: socket.id
+            }
+          );
+
+          return;
         }
-      console.log("tables in new config: " + tablesInRoom[roomID])
-      socket.emit("all tables", tablesInRoom[roomID]);
     }
   });
 
