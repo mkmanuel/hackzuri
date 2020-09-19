@@ -2,7 +2,8 @@ import React, { useEffect, useRef, useState } from "react";
 import io from "socket.io-client";
 import Peer from "simple-peer";
 import styled from "styled-components";
-import { StyledVideo, Table, Video } from "../components";
+import { Button, StyledVideo, Table, Video } from "../components";
+import { WaitingLobby } from "../components/waiting-lobby";
 
 const PageContainer = styled.div`
   margin: 0.5rem 1rem;
@@ -20,16 +21,24 @@ const RoomContainer = styled.div`
   display: grid;
   grid-template-columns: 3fr 1fr 3fr;
   grid-gap: 10px;
-  grid-auto-rows: minmax(200px, auto);
+  grid-auto-rows: 3fr 1fr 3fr;
+
+  > div {
+    height: 100%;
+  }
 
   .table {
+    background-color: #b7e0f2;
+
     align-self: center;
     justify-self: center;
     width: 100%;
+    min-height: 15rem;
 
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
 
     img {
       width: 10rem;
@@ -43,7 +52,7 @@ const RoomContainer = styled.div`
 
   .table-2 {
     grid-column: 3;
-    grid-row: 2;
+    grid-row: 1;
   }
 
   .table-3 {
@@ -137,11 +146,15 @@ export const Room = (props) => {
 
   return (
     <PageContainer>
+      <Button onClick={() => props.history.push(`/`)} variant="quiet">
+        Back to overview
+      </Button>
       <h1>Your room</h1>
       <RoomContainer>
         {[...Array(3)].map((item, index) => (
           <Table index={index + 1} />
         ))}
+        <WaitingLobby />
       </RoomContainer>
 
       {/* This is yourself */}
