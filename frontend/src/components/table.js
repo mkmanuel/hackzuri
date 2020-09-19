@@ -1,8 +1,8 @@
 import React from "react";
 import styled from "styled-components";
-import coffeeTable from "../images/coffee-table.png";
-
 import { PlusCircle } from "@styled-icons/boxicons-regular";
+
+import coffeeTable from "../images/coffee-table.png";
 
 const StyledBubbles = styled.div`
   display: flex;

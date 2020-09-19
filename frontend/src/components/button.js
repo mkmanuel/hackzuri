@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import { ArrowBack } from "@styled-icons/boxicons-regular";
+import classNames from "classnames";
 
 const StyledButton = styled.button`
   height: 2rem;
@@ -11,14 +12,20 @@ const StyledButton = styled.button`
 
   cursor: pointer;
 
-  &.primary {
+  &.button--is-large {
+    height: 3.5rem;
+    font-size: 2rem;
+    padding: 0 1rem;
+  }
+
+  &.primary-variant {
     color: white;
     background-color: #de7447;
     border: 2px solid #de7447;
     border-radius: 4px;
   }
 
-  &.quiet {
+  &.quiet-variant {
     background-color: transparent;
     border: none;
 
@@ -28,9 +35,14 @@ const StyledButton = styled.button`
   }
 `;
 
-export const Button = ({ onClick, children, variant = "primary" }) => {
+export const Button = ({ onClick, children, variant = "primary", size }) => {
   return (
-    <StyledButton className={variant} onClick={onClick}>
+    <StyledButton
+      className={classNames(`${variant}-variant`, {
+        "button--is-large": size === "large",
+      })}
+      onClick={onClick}
+    >
       {variant === "quiet" && <ArrowBack size={20} />}
       {children}
     </StyledButton>

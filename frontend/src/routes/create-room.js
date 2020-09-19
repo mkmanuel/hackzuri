@@ -1,6 +1,9 @@
 import React from "react";
 import { v1 as uuid } from "uuid";
 import styled from "styled-components";
+import { Coffee } from "@styled-icons/boxicons-regular";
+import { ChatBubbleOutline } from "@styled-icons/material";
+
 import { Button } from "../components";
 
 const OverviewContainer = styled.div`
@@ -26,8 +29,12 @@ export const CreateRoom = (props) => {
 
   return (
     <OverviewContainer>
-      <h1>BubbleCoffee</h1>
-      <Button onClick={create}>Create room</Button>
+      <h1>
+        BubbleCoffee <Coffee size={32} /> <ChatBubbleOutline size={32} />
+      </h1>
+      <Button onClick={create} size="large">
+        Create room
+      </Button>
     </OverviewContainer>
   );
 };
