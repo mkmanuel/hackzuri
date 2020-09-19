@@ -1,5 +1,5 @@
 require("dotenv").config();
-const { v1: uuid } = require("uuid");
+const { v4: uuid } = require("uuid");
 const express = require("express");
 const http = require("http");
 const app = express();
