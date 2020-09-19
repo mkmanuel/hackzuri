@@ -8,11 +8,16 @@ import {StyledVideo, Video} from "./video";
 const StyledBubbles = styled.div`
   display: flex;
   justify-content: space-around;
+  align-items: center;
 
+  height: 40%;
   width: 100%;
 
   svg {
     cursor: pointer;
+  }
+
+  .bubbles__spot {
   }
 `;
 
