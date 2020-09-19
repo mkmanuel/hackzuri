@@ -6,7 +6,7 @@ import { Button, StyledVideo, Table, Video } from "../components";
 import { WaitingLobby } from "../components/waiting-lobby";
 
 const PageContainer = styled.div`
-  margin: 0.5rem 1rem;
+  margin: 5rem 1rem;
 
   @media only screen and (min-width: 768px) {
     margin-left: 4rem;
@@ -68,8 +68,13 @@ const videoConstraints = {
 
 export const Room = (props) => {
   const [peers, setPeers] = useState([]);
+
+  // undefined means the user is currently in waiting lobby.
+  // When a table is selected it should contain an object of table and bubble indexes.
+  const [yourPosition, setYourPosition] = useState(undefined);
+
   const socketRef = useRef();
-  const userVideo = useRef();
+  const userVideoRef = useRef();
   const peersRef = useRef([]);
   const roomID = props.match.params.roomID;
 
@@ -78,7 +83,7 @@ export const Room = (props) => {
     navigator.mediaDevices
       .getUserMedia({ video: videoConstraints, audio: true })
       .then((stream) => {
-        userVideo.current.srcObject = stream;
+        userVideoRef.current.srcObject = stream;
         socketRef.current.emit("join room", roomID);
         socketRef.current.on("all users", (users) => {
           const peers = [];
@@ -144,6 +149,16 @@ export const Room = (props) => {
     return peer;
   }
 
+  const onBubbleClick = (tableIndex, bubbleIndex) => {
+    setYourPosition({ tableIndex, bubbleIndex });
+  };
+
+  const goBackToLobby = () => {
+    setYourPosition(undefined);
+  };
+
+  console.log(yourPosition);
+
   return (
     <PageContainer>
       <Button onClick={() => props.history.push(`/`)} variant="quiet">
@@ -152,13 +167,19 @@ export const Room = (props) => {
       <h1>Your room</h1>
       <RoomContainer>
         {[...Array(3)].map((item, index) => (
-          <Table index={index + 1} />
+          <Table
+            yourPosition={yourPosition}
+            tableIndex={index}
+            onBubbleClick={onBubbleClick}
+            userVideoRef={userVideoRef}
+          />
         ))}
-        <WaitingLobby />
+        <WaitingLobby
+          userInWaitingLobby={!yourPosition}
+          userVideoRef={userVideoRef}
+          backToLobby={goBackToLobby}
+        />
       </RoomContainer>
-
-      {/* This is yourself */}
-      <StyledVideo muted ref={userVideo} autoPlay playsInline />
 
       {peers.map((peer, index) => {
         return <Video key={index} peer={peer} />;

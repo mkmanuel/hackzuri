@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { PlusCircle } from "@styled-icons/boxicons-regular";
 
 import coffeeTable from "../images/coffee-table.png";
+import { StyledVideo } from "./video";
 
 const StyledBubbles = styled.div`
   display: flex;
@@ -15,14 +16,30 @@ const StyledBubbles = styled.div`
   }
 `;
 
-export const Table = ({ index }) => {
+export const Table = ({
+  tableIndex,
+  onBubbleClick,
+  yourPosition,
+  userVideoRef,
+}) => {
   return (
-    <div className={`table table-${index}`}>
+    <div className={`table table-${tableIndex + 1}`}>
       <img src={coffeeTable} />
       <StyledBubbles>
-        {[...Array(3)].map(() => (
-          <div className="bubbles__spot">
-            <PlusCircle size={24} />
+        {[...Array(3)].map((item, bubbleIndex) => (
+          <div
+            className="bubbles__spot"
+            onClick={() => onBubbleClick(tableIndex, bubbleIndex)}
+          >
+            {yourPosition &&
+            yourPosition.tableIndex === tableIndex &&
+            yourPosition.bubbleIndex === bubbleIndex ? (
+              <StyledVideo muted ref={userVideoRef} autoPlay playsInline>
+                Yourself
+              </StyledVideo>
+            ) : (
+              <PlusCircle size={24} />
+            )}
           </div>
         ))}
       </StyledBubbles>
