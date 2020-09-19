@@ -28,6 +28,7 @@ export const Table = ({
       <StyledBubbles>
         {[...Array(3)].map((item, bubbleIndex) => (
           <div
+            key={bubbleIndex}
             className="bubbles__spot"
             onClick={() => onBubbleClick(tableIndex, bubbleIndex)}
           >

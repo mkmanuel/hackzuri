@@ -191,6 +191,7 @@ export const Room = (props) => {
       <RoomContainer>
         {tables.map((tableUUID, index) => (
           <Table
+            key={index}
             yourPosition={yourPosition}
             tableIndex={index}
             onBubbleClick={onBubbleClick}
