@@ -15,6 +15,15 @@ const tablesInRoom = {};
 
 const usersAtTable = {};
 
+
+// Rooms contain tables which themselves contain users. These get sent to frontend
+const TableWithUsers = () => (
+  {
+      tableID: uuid(),
+      users: [],
+  }
+);
+
 io.on("connection", (socket) => {
   socket.on("join room", (roomID) => {
     if (users[roomID]) {
@@ -26,7 +35,7 @@ io.on("connection", (socket) => {
       users[roomID].push(socket.id);
     } else {
       users[roomID] = [socket.id];
-      tablesInRoom[roomID] = [uuid(), uuid(), uuid()]; // tables are fixed at 3
+      tablesInRoom[roomID] = [TableWithUsers(), TableWithUsers(), TableWithUsers()]; // tables are fixed at 3
     }
     socketToRoom[socket.id] = roomID;
     const usersInThisRoom = users[roomID].filter((id) => id !== socket.id);
@@ -35,38 +44,40 @@ io.on("connection", (socket) => {
     socket.emit("all tables", tablesInRoom[roomID]);
   });
 
-  socket.on("join table", (roomID, tableID) => {
-    // remove user from old table => find all tables in room and see if they are sat anywhere.
-    let oldTable = tablesInRoom[roomID]
-      ? tablesInRoom[roomID].filter((table) =>
-          usersAtTable[table] ? usersAtTable[table].includes(socket.id) : false
-        )
-      : [];
-    console.log(oldTable);
-    if (oldTable.length > 0) {
-      // can only be 1
-      let oldUsers = usersAtTable[oldTable[0]]
-        ? usersAtTable[oldTable[0]].filter((id) => id !== socket.id)
-        : [];
+  socket.on("join table", (roomID, newTable) => {
+    console.log("newtableid" + newTable.tableID)
 
-      usersAtTable[oldTable[0]] = oldUsers;
+      // remove user from old table => find all tables in room and see if they are sat anywhere.
+    let tablesInSpecificRooms = tablesInRoom[roomID];
+
+
+    console.log(tablesInSpecificRooms);
+    console.log(tablesInSpecificRooms.findIndex((table) => table.tableID === newTable.tableID))
+      let oldTableIndex = tablesInSpecificRooms.findIndex((table) => table.users.includes(socket.id));
+      let newTableIndex = tablesInSpecificRooms.findIndex((table) => table.tableID === newTable.tableID);
+
+      console.log("oldTableIndex" + oldTableIndex);
+      console.log("newTableIndex" + newTableIndex);
+      console.log("tablesInSpecificRooms" + tablesInSpecificRooms)
+
+    // remove user from table
+    if (oldTableIndex > -1) {
+        let filteredUsers = tablesInSpecificRooms[oldTableIndex].users.filter((user) => user !== socket.id);
+        console.log("filtered users:" + filteredUsers);
+        tablesInRoom[roomID][oldTableIndex].users = filteredUsers
     }
 
-    if (tableID !== 0) {
-      if (usersAtTable[tableID]) {
-        const length = usersAtTable[tableID].length;
-        if (length === 3) {
-          socket.emit("table full");
-          return;
+    if (newTableIndex > -1) {
+
+        if (tablesInRoom[roomID][newTableIndex].users.length > 2) {
+            socket.emit("table full");
+            return;
+        } else {
+            tablesInRoom[roomID][newTableIndex].users.push(socket.id);
+            return;
         }
-        usersAtTable[tableID].push(socket.id);
-      } else {
-        usersAtTable[tableID] = [socket.id];
-      }
-      const usersOnThisTable = usersAtTable[tableID].filter(
-        (id) => id !== socket.id
-      );
-      socket.emit("table users", usersOnThisTable);
+      console.log("tables in new config: " + tablesInRoom[roomID])
+      socket.emit("table users", tablesInRoom[roomID]);
     }
   });
 
